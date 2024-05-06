@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Url Shortner</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        font-family: monospace;
+        color: #222;
+      }
+      header {
+        padding: 1rem;
+        display: flex;
+        background: #eff;
+        box-shadow: 2px 6px 10px #3335;
+        justify-content: center;
+      }
+      header div {
+        color: #222;
+        font-size: 25px;
+        font-weight: 800;
+        padding: 0.5rem 2rem;
+        background: #eee;
+        box-shadow: 3px 4px 7px #3335;
+        outline: none;
+      }
+      main {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+      }
+      form {
+        padding: 1rem;
+        background: #eee;
+        box-shadow: 2px 5px 8px #3335;
+        display: flex;
+        justify-content: space-between;
+      }
+      form input {
+        width: 80%;
+        padding: 0.5rem 1rem;
+        outline: none;
+        color: #333;
+      }
+      form button {
+        padding: 1rem;
+        border: none;
+        color: #eee;
+        background: #3335;
+        border-radius: 20px;
+      }
+      table {
+        padding: 0.5rem;
+        border: 2px solid #3335;
+        box-shadow: 2px 4px 8px #3335;
+        margin-top: 2rem;
+      }
+      table tr,
+      td,
+      th {
+        padding: 0.5rem 1rem;
+        color: #333;
+        border: 1px solid #3335;
+        border-collapse: collapse;
+      }
+      footer {
+        font-size: 30px;
+        color: #222;
+        text-align: center;
+        padding: 1rem;
+      }
+    </style>
+    <script defer>
+     const form = document.querySelector('form');
+ 
+     form.addEventListener('submit', (event) => {
+       event.preventDefault();
+       const fullUrl = document.getElementById('url').value;
+       fetch('/shortUrls', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ fullUrl })
+       })
+       .then(response => {
+         if (!response.ok) {
+           throw new Error('Failed to shorten URL');
+         }
+         return response.json();
+       })
+       .then(data => {
+         console.log(data);
+         window.location.href = '/';
+       })
+       .catch(error => console.error('Error:', error));
+     });
+   </script>
+  </head>
+  <body>
+    <header>
+      <div>Url Shortner</div>
+    </header>
+
+    <main>
+      <form action="/shortUrls" method="POST">
+        <input type="url" name="fullUrl" id="url" placeholder="https://www.facebool.com" />
+        <button type="submit">Shorten</button>
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Long Url</th>
+            <th>Short Url</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% shortUrls.forEach(url => { %>
+            <tr>
+              <td><%= url.ID %></td>
+              <td><a href="<%= url.fullUrl %>"><%= url.fullUrl %></a></td>
+              <td><a href="<%= url.fullUrl %>"><%= url.shortUrl %></a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3">All Links</td>
+          </tr>
+        </tfoot>
+      </table>
+    </main>
+
+    <footer>&copy; Url Shortner 2024</footer>
+  </body>
+</html>
